@@ -1,10 +1,11 @@
 """narration.wav + images/*.jpg + script.json의 자막을 합쳐 output.mp4(9:16)를 만든다.
 GitHub Actions 러너에는 ffmpeg와 한글 폰트(fonts-nanum)가 미리 설치되어 있어야 한다.
+moviepy 2.x 문법 기준.
 """
 import glob
 import json
 
-from moviepy.editor import (
+from moviepy import (
     AudioFileClip,
     CompositeVideoClip,
     ImageClip,
@@ -13,12 +14,25 @@ from moviepy.editor import (
 )
 
 W, H = 1080, 1920
-FONT = "NanumGothic-Bold"  # apt install fonts-nanum 로 설치되는 폰트명
+
+
+def find_font() -> str:
+    """fonts-nanum 패키지가 설치한 굵은 나눔고딕 폰트 파일 경로를 찾는다."""
+    candidates = glob.glob("/usr/share/fonts/truetype/nanum/*Bold*.ttf")
+    if not candidates:
+        candidates = glob.glob("/usr/share/fonts/truetype/nanum/*.ttf")
+    if not candidates:
+        raise SystemExit(
+            "나눔고딕 폰트를 찾지 못했습니다. 워크플로에 'apt-get install fonts-nanum'이 있는지 확인하세요."
+        )
+    return candidates[0]
 
 
 def main() -> None:
     with open("script.json", "r", encoding="utf-8") as f:
         script = json.load(f)
+
+    font_path = find_font()
 
     audio = AudioFileClip("narration.wav")
     duration = audio.duration
@@ -30,13 +44,12 @@ def main() -> None:
     per_image = duration / len(images)
     image_clips = []
     for path in images:
-        clip = ImageClip(path).resize(height=H).set_duration(per_image)
-        clip = clip.crop(x_center=clip.w / 2, width=min(clip.w, W))
+        clip = ImageClip(path, duration=per_image).resized(height=H)
+        clip = clip.cropped(x_center=clip.w / 2, width=min(clip.w, W))
         image_clips.append(clip)
 
-    slideshow = concatenate_videoclips(image_clips, method="compose").set_audio(audio)
+    slideshow = concatenate_videoclips(image_clips, method="compose").with_audio(audio)
 
-    # 문장 단위 자막을 오디오 길이에 균등 배분 (정밀 동기화는 TODO 참고)
     raw = script["narration"].replace("!", ".").replace("?", ".")
     sentences = [s.strip() for s in raw.split(".") if s.strip()]
     per_sentence = duration / max(len(sentences), 1)
@@ -45,18 +58,18 @@ def main() -> None:
     for i, sentence in enumerate(sentences):
         txt = (
             TextClip(
-                sentence,
-                fontsize=64,
+                font=font_path,
+                text=sentence,
+                font_size=64,
                 color="white",
-                font=FONT,
                 stroke_color="black",
                 stroke_width=3,
                 method="caption",
                 size=(W - 100, None),
             )
-            .set_start(i * per_sentence)
-            .set_duration(per_sentence)
-            .set_position(("center", H - 400))
+            .with_start(i * per_sentence)
+            .with_duration(per_sentence)
+            .with_position(("center", H - 400))
         )
         subtitle_clips.append(txt)
 
