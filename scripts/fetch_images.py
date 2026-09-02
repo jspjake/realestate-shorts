@@ -43,7 +43,7 @@ def main() -> None:
 
     os.makedirs("images", exist_ok=True)
 
-        queries = [
+    queries = [
         f"{neighborhood} Seoul",
         "Seoul subway station",
         "Seoul apartment complex",
@@ -55,6 +55,7 @@ def main() -> None:
     total = 0
     for q in queries:
         total += search_and_download(q, access_key, total, max_results=3)
+
     if total == 0:
         raise SystemExit(f"'{neighborhood}' 관련 이미지를 하나도 찾지 못했습니다. 검색어를 조정하세요.")
 
