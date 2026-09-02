@@ -1,62 +1,37 @@
 [
-  {
-    "name": "대치동",
-    "used": true
-  },
-  {
-    "name": "압구정동",
-    "used": true
-  },
-  {
-    "name": "청담동",
-    "used": false
-  },
-  {
-    "name": "도곡동",
-    "used": false
-  },
-  {
-    "name": "역삼동",
-    "used": false
-  },
-  {
-    "name": "삼성동",
-    "used": false
-  },
-  {
-    "name": "논현동",
-    "used": false
-  },
-  {
-    "name": "서초동",
-    "used": false
-  },
-  {
-    "name": "반포동",
-    "used": false
-  },
-  {
-    "name": "잠원동",
-    "used": false
-  },
-  {
-    "name": "방배동",
-    "used": false
-  },
-  {
-    "name": "잠실동",
-    "used": false
-  },
-  {
-    "name": "송파동",
-    "used": false
-  },
-  {
-    "name": "목동",
-    "used": false
-  },
-  {
-    "name": "여의도동",
-    "used": false
-  }
+  { "name": "대치동", "used": true },
+  { "name": "압구정동", "used": true },
+  { "name": "청담동", "used": false },
+  { "name": "신림동", "used": false },
+  { "name": "봉천동", "used": false },
+  { "name": "도곡동", "used": false },
+  { "name": "청량리동", "used": false },
+  { "name": "역삼동", "used": false },
+  { "name": "회기동", "used": false },
+  { "name": "상계동", "used": false },
+  { "name": "삼성동", "used": false },
+  { "name": "중계동", "used": false },
+  { "name": "논현동", "used": false },
+  { "name": "미아동", "used": false },
+  { "name": "수유동", "used": false },
+  { "name": "서초동", "used": false },
+  { "name": "창동", "used": false },
+  { "name": "반포동", "used": false },
+  { "name": "화곡동", "used": false },
+  { "name": "등촌동", "used": false },
+  { "name": "잠원동", "used": false },
+  { "name": "상도동", "used": false },
+  { "name": "방배동", "used": false },
+  { "name": "노량진동", "used": false },
+  { "name": "시흥동", "used": false },
+  { "name": "잠실동", "used": false },
+  { "name": "독산동", "used": false },
+  { "name": "송파동", "used": false },
+  { "name": "면목동", "used": false },
+  { "name": "상봉동", "used": false },
+  { "name": "목동", "used": false },
+  { "name": "홍제동", "used": false },
+  { "name": "여의도동", "used": false },
+  { "name": "응암동", "used": false },
+  { "name": "신당동", "used": false }
 ]
