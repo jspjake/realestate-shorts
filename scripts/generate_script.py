@@ -40,7 +40,9 @@ SYSTEM_PROMPT = """당신은 한국 부동산 동네 소개 유튜브 쇼츠 대
 - 웹 검색 활용: 재건축·재개발 진행 상황, 최근 이슈처럼 시간이 지나면 바뀌는
   정보는 웹 검색으로 확인한 뒤 반영할 것. 특정 기업의 본사·사옥 위치처럼 자주
   바뀌는 정보를 언급하려면 반드시 검색으로 현재 상태를 확인하고, 확인이
-  어려우면 언급을 피할 것.
+  어려우면 언급을 피할 것. 단, 검색은 최대 2~3회까지만 하고, 그 이상 고민하지
+  말고 확보한 정보만으로 반드시 최종 JSON 답변을 작성할 것. 검색을 계속
+  반복하느라 답변을 못 쓰는 일이 없도록 할 것.
 - 균형: 장점만 나열하지 말 것. 그 동네의 단점이나 아쉬운 점(예: 높은 집값,
   교통 혼잡, 노후 시설, 편의시설 부족, 주차난 등)을 최소 1가지는 자연스럽게
   포함시킬 것. 장점만 늘어놓으면 광고처럼 느껴져서 신뢰도가 떨어짐.
@@ -81,7 +83,7 @@ def call_model(client: anthropic.Anthropic, user_message: str):
     for _ in range(MAX_CONTINUATIONS):
         response = client.messages.create(
             model=MODEL,
-            max_tokens=8192,
+            max_tokens=16000,
             system=SYSTEM_PROMPT,
             tools=[{"type": "web_search_20250305", "name": "web_search"}],
             messages=messages,
