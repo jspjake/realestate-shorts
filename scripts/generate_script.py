@@ -17,10 +17,10 @@ SYSTEM_PROMPT = """당신은 한국 부동산 동네 소개 유튜브 쇼츠 대
 - 분량: 내레이션 기준 180~220자 (TTS로 읽었을 때 약 55~65초)
 - 톤: 친근한 구어체, 사람이 직접 말하듯이
 - 내용: 특정 동네의 일반적이지만 의외로 흥미로운 사실 1~2가지 중심 (학군, 집값 변천사, 지명 유래, 의외의 통계 등)
-- 절대 하지 말 것: 확인 안 된 수치·소문을 단정적으로 말하기, 특정 매물·특정 중개업소 홍보, 자극적이거나 선정적인 표현
+- 절대 하지 말 것: 확인 안 된 최신 수치나 소문을 단정적으로 말하기, 특정 매물·특정 중개업소 홍보, 자극적이거나 선정적인 표현
 - 시작 3초 안에 흥미를 끄는 훅(hook) 문장으로 시작
 - 마지막은 짧은 여운 또는 다음 편 예고성 멘트로 마무리
-- 사실관계가 불확실하면 웹 검색으로 먼저 확인할 것
+- 최신 통계나 정확한 수치보다는, 시간이 지나도 잘 안 바뀌는 일반 상식/역사/지명유래 위주로 구성할 것
 
 출력은 반드시 아래 JSON 형식으로만 답하세요. 다른 설명은 절대 추가하지 마세요.
 {
@@ -40,20 +40,14 @@ def main() -> None:
     neighborhood = sys.argv[1]
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
-    # 참고: web_search 도구 이름/버전은 Anthropic 공식 문서 기준으로 최신 값인지
-    # 가끔 확인해 주세요 (https://docs.claude.com).
     response = client.messages.create(
         model=MODEL,
         max_tokens=1000,
         system=SYSTEM_PROMPT,
-        tools=[{"type": "web_search_20250305", "name": "web_search"}],
         messages=[
             {
                 "role": "user",
-                "content": (
-                    f"'{neighborhood}'에 대한 쇼츠 대본을 만들어줘. "
-                    "필요하면 웹 검색으로 사실관계를 확인해."
-                ),
+                "content": f"'{neighborhood}'에 대한 쇼츠 대본을 만들어줘.",
             }
         ],
     )
@@ -71,6 +65,7 @@ def main() -> None:
     except json.JSONDecodeError:
         print("모델 응답을 JSON으로 파싱하지 못했습니다. 원문:", file=sys.stderr)
         print(raw_text, file=sys.stderr)
+        print(f"(참고) stop_reason: {response.stop_reason}", file=sys.stderr)
         sys.exit(1)
 
     script["neighborhood"] = neighborhood
