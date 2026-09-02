@@ -25,7 +25,7 @@ def main() -> None:
         "output": {
             "volume": 100,
             "audio_pitch": 0,
-            "audio_tempo": 1,
+            "audio_tempo": 1.5,
             "audio_format": "wav",
         },
     }
