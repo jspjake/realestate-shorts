@@ -28,7 +28,7 @@ def main() -> None:
     body = {
         "snippet": {
             "title": script["title"],
-            "description": script["description"],
+            "description": script["description"] + "\n\n#Shorts",
             "tags": script.get("tags", []),
             "categoryId": "22",  # People & Blogs. 필요하면 변경.
         },
