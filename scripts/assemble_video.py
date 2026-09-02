@@ -1,4 +1,5 @@
-"""narration.wav + images/*.jpg + script.json의 자막을 합쳐 output.mp4(9:16)를 만든다.
+"""narration.wav + images/*.jpg + tts_timestamps.json(단어별 타이밍)을 이용해
+자막이 실제 음성과 정확히 맞는 세로 쇼츠 영상(output.mp4, 9:16)을 만든다.
 GitHub Actions 러너에는 ffmpeg와 한글 폰트(fonts-nanum)가 미리 설치되어 있어야 한다.
 moviepy 2.x 문법 기준.
 """
@@ -28,9 +29,26 @@ def find_font() -> str:
     return candidates[0]
 
 
+def group_words_into_captions(words: list) -> list:
+    """단어별 타임스탬프를 문장 단위 자막 그룹으로 묶는다.
+    각 그룹은 (자막 텍스트, 시작초, 종료초) 튜플이며, 실제 발화 시각 그대로다."""
+    groups = []
+    current = []
+    for w in words:
+        current.append(w)
+        if w["text"].strip().endswith((".", "!", "?")):
+            caption_text = " ".join(x["text"] for x in current)
+            groups.append((caption_text, current[0]["start"], current[-1]["end"]))
+            current = []
+    if current:
+        caption_text = " ".join(x["text"] for x in current)
+        groups.append((caption_text, current[0]["start"], current[-1]["end"]))
+    return groups
+
+
 def main() -> None:
-    with open("script.json", "r", encoding="utf-8") as f:
-        script = json.load(f)
+    with open("tts_timestamps.json", "r", encoding="utf-8") as f:
+        words = json.load(f)
 
     font_path = find_font()
 
@@ -50,16 +68,17 @@ def main() -> None:
 
     slideshow = concatenate_videoclips(image_clips, method="compose").with_audio(audio)
 
-    raw = script["narration"].replace("!", ".").replace("?", ".")
-    sentences = [s.strip() for s in raw.split(".") if s.strip()]
-    per_sentence = duration / max(len(sentences), 1)
+    caption_groups = group_words_into_captions(words)
+    if not caption_groups:
+        raise SystemExit("자막 타이밍 데이터(tts_timestamps.json)가 비어 있습니다.")
 
     subtitle_clips = []
-    for i, sentence in enumerate(sentences):
+    for text, start, end in caption_groups:
+        clip_duration = max(end - start, 0.3)
         txt = (
             TextClip(
                 font=font_path,
-                text=sentence,
+                text=text,
                 font_size=64,
                 color="white",
                 stroke_color="black",
@@ -67,8 +86,8 @@ def main() -> None:
                 method="caption",
                 size=(W - 100, None),
             )
-            .with_start(i * per_sentence)
-            .with_duration(per_sentence)
+            .with_start(start)
+            .with_duration(clip_duration)
             .with_position(("center", H // 2))
         )
         subtitle_clips.append(txt)
@@ -76,7 +95,7 @@ def main() -> None:
     final = CompositeVideoClip([slideshow, *subtitle_clips], size=(W, H))
     final.write_videofile("output.mp4", fps=30, codec="libx264", audio_codec="aac")
 
-    print("영상 합성 완료: output.mp4")
+    print(f"영상 합성 완료: output.mp4 (자막 {len(caption_groups)}개, 실제 음성 타이밍 기준)")
 
 
 if __name__ == "__main__":
