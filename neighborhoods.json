@@ -1,7 +1,7 @@
 [
   { "name": "대치동", "used": true },
   { "name": "압구정동", "used": true },
-  { "name": "청담동", "used": false },
+  { "name": "청담동", "used": true },
   { "name": "신림동", "used": false },
   { "name": "봉천동", "used": false },
   { "name": "도곡동", "used": false },
