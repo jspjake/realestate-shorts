@@ -69,7 +69,7 @@ def main() -> None:
             )
             .with_start(i * per_sentence)
             .with_duration(per_sentence)
-            .with_position(("center", H - 400))
+            .with_position(("center", H // 2))
         )
         subtitle_clips.append(txt)
 
