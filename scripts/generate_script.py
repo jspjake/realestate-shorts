@@ -42,7 +42,7 @@ def main() -> None:
 
     response = client.messages.create(
         model=MODEL,
-        max_tokens=1000,
+        max_tokens=4096,
         system=SYSTEM_PROMPT,
         messages=[
             {
