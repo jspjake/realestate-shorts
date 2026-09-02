@@ -6,7 +6,7 @@ on:
     # 싶다면 neighborhoods.json 갱신 커밋 로그를 기준으로 스크립트에서 간격을
     # 직접 판단하도록 확장하는 걸 권장합니다. 우선은 수동 실행(workflow_dispatch)
     # 으로 원하는 타이밍에 직접 돌리는 것도 방법입니다.
-    - cron: "0 21 * * *"
+    - cron: "0 21 */2 * *"
   workflow_dispatch: {}
 
 jobs:
