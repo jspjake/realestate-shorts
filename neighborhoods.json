@@ -1,17 +1,62 @@
 [
-  { "name": "대치동", "used": false },
-  { "name": "압구정동", "used": false },
-  { "name": "청담동", "used": false },
-  { "name": "도곡동", "used": false },
-  { "name": "역삼동", "used": false },
-  { "name": "삼성동", "used": false },
-  { "name": "논현동", "used": false },
-  { "name": "서초동", "used": false },
-  { "name": "반포동", "used": false },
-  { "name": "잠원동", "used": false },
-  { "name": "방배동", "used": false },
-  { "name": "잠실동", "used": false },
-  { "name": "송파동", "used": false },
-  { "name": "목동", "used": false },
-  { "name": "여의도동", "used": false }
+  {
+    "name": "대치동",
+    "used": true
+  },
+  {
+    "name": "압구정동",
+    "used": false
+  },
+  {
+    "name": "청담동",
+    "used": false
+  },
+  {
+    "name": "도곡동",
+    "used": false
+  },
+  {
+    "name": "역삼동",
+    "used": false
+  },
+  {
+    "name": "삼성동",
+    "used": false
+  },
+  {
+    "name": "논현동",
+    "used": false
+  },
+  {
+    "name": "서초동",
+    "used": false
+  },
+  {
+    "name": "반포동",
+    "used": false
+  },
+  {
+    "name": "잠원동",
+    "used": false
+  },
+  {
+    "name": "방배동",
+    "used": false
+  },
+  {
+    "name": "잠실동",
+    "used": false
+  },
+  {
+    "name": "송파동",
+    "used": false
+  },
+  {
+    "name": "목동",
+    "used": false
+  },
+  {
+    "name": "여의도동",
+    "used": false
+  }
 ]
