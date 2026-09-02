@@ -60,7 +60,7 @@ SYSTEM_PROMPT = """당신은 한국 부동산 동네 소개 유튜브 쇼츠 대
 def call_model(client: anthropic.Anthropic, user_message: str):
     response = client.messages.create(
         model=MODEL,
-        max_tokens=4096,
+        max_tokens=8192,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )
