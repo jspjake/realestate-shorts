@@ -1,14 +1,18 @@
-"""Typecast TTS API로 narration.wav를 생성한다.
+"""Typecast TTS-with-timestamps API로 narration.wav와 자막 타이밍(tts_timestamps.json)을 생성한다.
 필요 환경변수: TYPECAST_API_KEY (선택: TYPECAST_VOICE_ID)
 voice_id 목록: https://studio.typecast.ai/developers/api/voices
+
+일반 TTS API 대신 '단어별 타임스탬프' 엔드포인트를 사용해서, 나중에 자막을
+실제 발화 시각에 정확히 맞출 수 있게 한다.
 """
+import base64
 import json
 import os
 
 import requests
 
-API_URL = "https://api.typecast.ai/v1/text-to-speech"
-# 예시 voice_id. 원하는 목소리로 바꾸려면 위 링크에서 골라 TYPECAST_VOICE_ID로 지정하세요.
+API_URL = "https://api.typecast.ai/v1/text-to-speech/with-timestamps"
+# 예시 voice_id. 원하는 목소리는 https://studio.typecast.ai/developers/api/voices 에서 골라 voice_id를 바꾸세요.
 DEFAULT_VOICE_ID = "tc_60e5426de8b95f1d3000d7b5"
 
 
@@ -25,7 +29,7 @@ def main() -> None:
         "output": {
             "volume": 100,
             "audio_pitch": 0,
-            "audio_tempo": 1.5,
+            "audio_tempo": 1.4,
             "audio_format": "wav",
         },
     }
@@ -37,15 +41,18 @@ def main() -> None:
         timeout=60,
     )
     resp.raise_for_status()
+    data = resp.json()
 
     with open("narration.wav", "wb") as f:
-        f.write(resp.content)
+        f.write(base64.b64decode(data["audio"]))
 
-    print("TTS 생성 완료: narration.wav")
+    words = data.get("words") or []
+    with open("tts_timestamps.json", "w", encoding="utf-8") as f:
+        json.dump(words, f, ensure_ascii=False, indent=2)
+
     print(
-        "참고: 자막을 대사와 정밀하게 맞추고 싶으면 Typecast의 "
-        "Timestamp TTS API 연동을 검토하세요 (https://typecast.ai/docs/ko). "
-        "지금 스크립트는 문장 길이 기준 균등 배분으로 근사치만 맞춥니다."
+        f"TTS 생성 완료: narration.wav "
+        f"(길이 {data.get('audio_duration')}초, 단어 타임스탬프 {len(words)}개)"
     )
 
 
