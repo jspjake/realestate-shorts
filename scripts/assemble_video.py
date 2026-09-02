@@ -29,20 +29,38 @@ def find_font() -> str:
     return candidates[0]
 
 
+MAX_CHARS_PER_CAPTION = 9  # 한 줄에 큼직하게 들어갈 정도의 짧은 구절 길이
+
+
 def group_words_into_captions(words: list) -> list:
-    """단어별 타임스탬프를 문장 단위 자막 그룹으로 묶는다.
+    """단어별 타임스탬프를 짧은 구절 단위 자막 그룹으로 묶는다 (한 줄에 표시하기 위함).
     각 그룹은 (자막 텍스트, 시작초, 종료초) 튜플이며, 실제 발화 시각 그대로다."""
     groups = []
     current = []
-    for w in words:
-        current.append(w)
-        if w["text"].strip().endswith((".", "!", "?")):
+    current_len = 0
+
+    def flush():
+        if current:
             caption_text = " ".join(x["text"] for x in current)
             groups.append((caption_text, current[0]["start"], current[-1]["end"]))
+
+    for w in words:
+        word_text = w["text"].strip()
+        added_len = len(word_text) + (1 if current else 0)
+        # 글자수 제한을 넘기기 직전이면 지금 단어를 넣기 전에 끊는다.
+        if current and current_len + added_len > MAX_CHARS_PER_CAPTION:
+            flush()
             current = []
-    if current:
-        caption_text = " ".join(x["text"] for x in current)
-        groups.append((caption_text, current[0]["start"], current[-1]["end"]))
+            current_len = 0
+        current.append(w)
+        current_len += len(word_text) + (1 if len(current) > 1 else 0)
+        # 문장이 끝나는 단어면 여기서도 끊는다.
+        if word_text.endswith((".", "!", "?")):
+            flush()
+            current = []
+            current_len = 0
+
+    flush()
     return groups
 
 
@@ -79,12 +97,12 @@ def main() -> None:
             TextClip(
                 font=font_path,
                 text=text,
-                font_size=64,
+                font_size=80,
                 color="white",
                 stroke_color="black",
                 stroke_width=3,
                 method="caption",
-                size=(W - 100, None),
+                size=(W - 160, None),
             )
             .with_start(start)
             .with_duration(clip_duration)
